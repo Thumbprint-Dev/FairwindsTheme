@@ -5,6 +5,11 @@ Version: 1.0
 Template: Howdy
 */
 
+:root {
+    --mt-accent: #002C5F;
+    --mt-accent-hover: #001E3D;
+}
+
 /* Stock Four51 theme (bootstrap-451.css) puts a fixed 100px gray margin below every page - with
    ModernTheme's generously-spaced pages this read as a huge empty gray gap before the footer. */
 body {
@@ -70,7 +75,7 @@ body {
 
 .mt-footer-link {
     font-size: 12px;
-    color: #0F6B63;
+    color: var(--mt-accent);
     font-weight: 600;
 }
 
@@ -117,31 +122,203 @@ body {
     margin: 0 0 18px;
 }
 
+/* The hero eyebrow and buttons are deliberately scoped under .mt-hero with their
+   own class names rather than reusing .mt-eyebrow / .mt-btn-accent: those two are
+   shared by ~30 other partials, and the hero needs light-on-navy treatment that
+   would wreck them everywhere else. */
+
 .mt-hero {
-    padding: 64px 0;
-    background-image: repeating-linear-gradient(120deg, #E7E1D3, #E7E1D3 22px, #DED5C0 22px, #DED5C0 44px);
+    position: relative;
+    overflow: hidden;
+    min-height: 520px;
+    display: flex;
+    align-items: center;
+    background: #002C5F;
+}
+
+.mt-hero-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% 40%;
+}
+
+/* Navy wash over the photo, fading out to the right so the copy column keeps
+   its contrast while the image stays visible on the open side. */
+.mt-hero-scrim {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(100deg,
+        rgba(0, 30, 61, .94) 0%,
+        rgba(0, 44, 95, .86) 34%,
+        rgba(0, 44, 95, .42) 58%,
+        rgba(0, 44, 95, 0) 78%);
+}
+
+.mt-hero-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 72px 0;
+}
+
+.mt-hero-inner {
+    max-width: 560px;
+}
+
+.mt-hero-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #9BBF4E;
+    margin-bottom: 18px;
 }
 
 .mt-hero h1 {
-    font-size: 42px;
-    font-weight: 300;
-    letter-spacing: -0.02em;
-    margin: 0 0 16px;
-    max-width: 640px;
-    line-height: 1.1;
-    color: #211F19;
+    font-size: 58px;
+    line-height: 1.06;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0 0 20px;
+    letter-spacing: -1.4px;
 }
 
 .mt-hero-sub {
-    font-size: 16px;
-    color: #4A463C;
-    max-width: 480px;
-    margin: 0 0 24px;
+    font-size: 19px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, .9);
+    margin: 0 0 34px;
+    max-width: 470px;
+}
+
+.mt-hero-cta > * {
+    margin: 0 12px 12px 0;
+}
+
+.mt-hero-btn {
+    display: inline-block;
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 2px solid transparent;
+    transition: background-color .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+    cursor: pointer;
+}
+
+.mt-hero-btn:hover,
+.mt-hero-btn:focus {
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.mt-hero-btn--primary {
+    background: #9BBF4E;
+    border-color: #9BBF4E;
+    color: #001E3D;
+}
+
+.mt-hero-btn--primary:hover,
+.mt-hero-btn--primary:focus {
+    background: #A9CC63;
+    border-color: #A9CC63;
+    color: #001E3D;
+}
+
+.mt-hero-btn--ghost {
+    background: transparent;
+    border-color: rgba(255, 255, 255, .75);
+    color: #FFFFFF;
+}
+
+.mt-hero-btn--ghost:hover,
+.mt-hero-btn--ghost:focus {
+    background: #FFFFFF;
+    border-color: #FFFFFF;
+    color: #002C5F;
+}
+
+/* ===== Value bar =====
+   Sits directly under the hero as a row of four quick entry points. The SVG
+   stroke is currentColor and the icon disc follows --mt-accent, so this row
+   re-accents with everything else. */
+
+.mt-values {
+    background: #FFFFFF;
+    border-bottom: 1px solid #E3E8EE;
+}
+
+.mt-values-grid {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 8px 0;
+}
+
+.mt-value {
+    flex: 1 1 25%;
+    min-width: 220px;
+    display: flex;
+    align-items: center;
+    padding: 26px 20px 26px 0;
+    text-decoration: none;
+    color: inherit;
+}
+
+.mt-value:hover,
+.mt-value:focus {
+    text-decoration: none;
+    color: inherit;
+}
+
+.mt-value:hover .mt-value-t,
+.mt-value:focus .mt-value-t {
+    color: var(--mt-accent-hover);
+}
+
+.mt-value-ic {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    margin-right: 14px;
+    border-radius: 50%;
+    /* Tint of the accent. Kept as its own declaration rather than a color-mix()
+       on the variable so it still renders on browsers without color-mix. */
+    background: rgba(0, 44, 95, .09);
+    color: var(--mt-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mt-value-t {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--mt-accent);
+    margin: 0 0 2px;
+    transition: color .18s ease;
+}
+
+.mt-value-d {
+    font-size: 13px;
+    color: #5B6B7C;
+    margin: 0;
+    line-height: 1.4;
 }
 
 .mt-btn-accent {
     display: inline-block;
-    background: #0F6B63;
+    background: var(--mt-accent);
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -153,7 +330,7 @@ body {
 
 .mt-btn-accent:hover,
 .mt-btn-accent:focus {
-    background: #0C544E;
+    background: var(--mt-accent-hover);
     color: #fff;
     text-decoration: none;
 }
@@ -181,7 +358,7 @@ body {
 }
 
 .mt-tile:hover {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     text-decoration: none;
     color: inherit;
 }
@@ -265,7 +442,7 @@ body {
 }
 
 .mt-dept-tile:focus-visible {
-    outline: 2px solid #0F6B63;
+    outline: 2px solid var(--mt-accent);
     outline-offset: 3px;
 }
 
@@ -318,7 +495,7 @@ body {
 
 .mt-product-price {
     font-size: 14px;
-    color: #0F6B63;
+    color: var(--mt-accent);
     font-weight: 600;
     margin: 0;
 }
@@ -396,12 +573,82 @@ body {
         flex: 0 0 50%;
         max-width: 50%;
     }
+
+    .mt-hero {
+        min-height: 460px;
+    }
+
+    .mt-hero h1 {
+        font-size: 46px;
+    }
+
+    /* Narrower frame: hold the navy further across so the copy keeps its
+       contrast instead of running into the bright part of the photo. */
+    .mt-hero-scrim {
+        background: linear-gradient(100deg,
+            rgba(0, 30, 61, .94) 0%,
+            rgba(0, 44, 95, .89) 46%,
+            rgba(0, 44, 95, .58) 74%,
+            rgba(0, 44, 95, 0) 97%);
+    }
 }
 
 @media (max-width: 767px) {
     .mt-carousel-card {
         flex: 0 0 100%;
         max-width: 100%;
+    }
+
+    /* Same treatment as desktop: photo fills the hero, navy wash sits on top.
+       The wash runs vertically (not from the side) because the copy is centred
+       over the whole frame here rather than sitting in a left column. */
+    .mt-hero {
+        min-height: 480px;
+    }
+
+    .mt-hero-img {
+        object-position: 60% 32%;
+    }
+
+    .mt-hero-scrim {
+        background: linear-gradient(180deg,
+            rgba(0, 30, 61, .90) 0%,
+            rgba(0, 44, 95, .74) 48%,
+            rgba(0, 30, 61, .92) 100%);
+    }
+
+    .mt-hero-content {
+        padding: 56px 0;
+    }
+
+    .mt-hero-inner {
+        max-width: none;
+        text-align: center;
+    }
+
+    .mt-hero h1 {
+        font-size: 34px;
+        letter-spacing: -.6px;
+    }
+
+    .mt-hero-sub {
+        font-size: 16px;
+        margin: 0 auto 26px;
+    }
+
+    .mt-hero-cta > * {
+        margin: 0 6px 10px;
+    }
+
+    .mt-value {
+        flex: 1 1 50%;
+        padding: 18px 12px 18px 0;
+    }
+}
+
+@media (max-width: 479px) {
+    .mt-value {
+        flex: 1 1 100%;
     }
 }
 
@@ -503,11 +750,11 @@ body {
 .mt-header-btn:focus {
     text-decoration: none;
     color: #262420;
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
 }
 
 .mt-cart-badge {
-    background: #0F6B63;
+    background: var(--mt-accent);
     color: #fff;
     font-size: 11px;
     font-weight: 700;
@@ -559,7 +806,7 @@ body {
 .mt-cat-nav a.active {
     color: #262420;
     font-weight: 600;
-    border-bottom-color: #0F6B63;
+    border-bottom-color: var(--mt-accent);
 }
 
 .mt-cat-nav-item {
@@ -598,7 +845,7 @@ body {
 
 .mt-cat-dropdown a:hover {
     background: #FAF8F4;
-    color: #0F6B63;
+    color: var(--mt-accent);
     text-decoration: none;
 }
 
@@ -709,12 +956,12 @@ body {
 }
 
 .mt-sidebar-tree [class~="451_cat_item"] > a:hover {
-    color: #0F6B63;
+    color: var(--mt-accent);
     text-decoration: none;
 }
 
 .mt-sidebar-tree [class~="451_cat_item"].active > a {
-    color: #0F6B63;
+    color: var(--mt-accent);
     font-weight: 600;
 }
 
@@ -833,7 +1080,7 @@ body {
 .mt-pdp-price {
     font-size: 26px;
     font-weight: 700;
-    color: #0F6B63;
+    color: var(--mt-accent);
     margin: 0 0 20px;
 }
 
@@ -913,7 +1160,7 @@ body {
 
 .mt-order-row label.required:after {
     content: ' *';
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-pdp-add-btn {
@@ -953,7 +1200,7 @@ body {
 
 .mt-pdp .view-form-icon label.required:after {
     content: " *";
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-pdp .view-form-icon .form-control {
@@ -968,7 +1215,7 @@ body {
 }
 
 .mt-pdp .view-form-icon .form-control:focus {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     box-shadow: none;
 }
 
@@ -989,7 +1236,7 @@ body {
 }
 
 .mt-pdp .quantity .form-control:focus {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     box-shadow: none;
 }
 
@@ -1041,7 +1288,7 @@ body {
     text-align: center;
     background: none;
     border: none;
-    color: #0F6B63;
+    color: var(--mt-accent);
     font-size: 13px;
     font-weight: 500;
     padding: 8px 0 16px;
@@ -1089,7 +1336,7 @@ body {
 }
 
 .mt-login .mt-field input:focus {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     outline: none;
 }
 
@@ -1177,7 +1424,7 @@ body {
 }
 
 .mt-cart-item-link:hover .mt-cart-item-name {
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-cart-item-name {
@@ -1215,7 +1462,7 @@ body {
 
 .mt-cart .mt-field label.required:after {
     content: " *";
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-field-row {
@@ -1237,7 +1484,7 @@ body {
 
 .mt-cart .mt-field-row input:focus,
 .mt-cart .mt-field-row select:focus {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     outline: none;
 }
 
@@ -1273,12 +1520,12 @@ body {
     padding: 0;
     font-size: 13px;
     font-weight: 600;
-    color: #0F6B63;
+    color: var(--mt-accent);
     cursor: pointer;
 }
 
 .mt-cart-kit-toggle:hover {
-    color: #0C544E;
+    color: var(--mt-accent-hover);
 }
 
 .mt-cart-kit-count {
@@ -1613,7 +1860,7 @@ body {
 
 .mt-checkout .mt-field input:focus,
 .mt-checkout .mt-field select:focus {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     outline: none;
 }
 
@@ -1686,7 +1933,7 @@ body {
 }
 
 .mt-checkout-card .form-control:focus {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     outline: none;
     box-shadow: none;
 }
@@ -1795,7 +2042,7 @@ body {
 }
 
 .mt-checkout-shipto-toggle .mt-header-btn.active {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     background: #EAF3F1;
 }
 
@@ -1873,7 +2120,7 @@ body {
 
 .mt-checkout-shipto-item-date {
     font-size: 12px;
-    color: #0F6B63;
+    color: var(--mt-accent);
     font-weight: 600;
     margin: 0 0 4px;
 }
@@ -1939,11 +2186,11 @@ body {
 
 .mt-checkout-budget-balance {
     background: #EAF3F1;
-    border: 1px solid #0F6B63;
+    border: 1px solid var(--mt-accent);
     border-radius: 8px;
     padding: 12px 16px;
     font-size: 13px;
-    color: #0C544E;
+    color: var(--mt-accent-hover);
 }
 
 .mt-checkout-saved-card-row {
@@ -2129,7 +2376,7 @@ body {
 
 .mt-quickadd-modal-body .view-form-icon label.required:after {
     content: " *";
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-quickadd-modal-body .view-form-icon .form-control {
@@ -2144,7 +2391,7 @@ body {
 }
 
 .mt-quickadd-modal-body .view-form-icon .form-control:focus {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     box-shadow: none;
 }
 
@@ -2191,7 +2438,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #0F6B63;
+    background: var(--mt-accent);
     color: #fff;
     padding: 14px 18px;
 }
@@ -2238,7 +2485,7 @@ body {
 }
 
 .mt-kit-item-row.mt-kit-item-active {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     background: #EAF4F2;
 }
 
@@ -2280,13 +2527,13 @@ body {
 }
 
 .mt-kit-pill-active {
-    background: #0F6B63;
+    background: var(--mt-accent);
     color: #fff;
 }
 
 .mt-kit-pill-done {
     background: #E3F1EE;
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-kit-config-card {
@@ -2298,7 +2545,7 @@ body {
 }
 
 .mt-kit-config-card-header {
-    background: #0F6B63;
+    background: var(--mt-accent);
     color: #fff;
     padding: 14px 20px;
 }
@@ -2440,7 +2687,7 @@ body {
 }
 
 .mt-addresses-search .form-control:focus {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     outline: none;
     box-shadow: none;
 }
@@ -2499,19 +2746,19 @@ body {
 }
 
 .mt-addresses-link {
-    color: #0F6B63;
+    color: var(--mt-accent);
     font-weight: 600;
     text-decoration: none;
 }
 
 .mt-addresses-link:hover,
 .mt-addresses-link:focus {
-    color: #0C544E;
+    color: var(--mt-accent-hover);
     text-decoration: underline;
 }
 
 .mt-addresses-table .fa-check {
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-addresses-footer {
@@ -2570,7 +2817,7 @@ body {
 
 .mt-account-page .view-form-icon label.required:after {
     content: " *";
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-account-page .view-form-icon .form-control {
@@ -2586,7 +2833,7 @@ body {
 }
 
 .mt-account-page .view-form-icon .form-control:focus {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     box-shadow: none;
 }
 
@@ -2621,7 +2868,7 @@ body {
 }
 
 .mt-search-form .mt-field-row input:focus {
-    border-color: #0F6B63;
+    border-color: var(--mt-accent);
     outline: none;
 }
 
@@ -2682,7 +2929,7 @@ body {
 
 .mt-messages-subject-link:hover,
 .mt-messages-subject-link:focus {
-    color: #0F6B63;
+    color: var(--mt-accent);
     text-decoration: underline;
 }
 
@@ -2778,7 +3025,7 @@ body {
     padding: 14px 18px;
     margin: 0 0 32px;
     background: #FAF8F4;
-    border-left: 3px solid #0F6B63;
+    border-left: 3px solid var(--mt-accent);
     border-radius: 4px;
 }
 
@@ -2815,13 +3062,13 @@ body {
 }
 
 .mt-legal-body a {
-    color: #0F6B63;
+    color: var(--mt-accent);
     text-decoration: underline;
 }
 
 .mt-legal-body a:hover,
 .mt-legal-body a:focus {
-    color: #0C544E;
+    color: var(--mt-accent-hover);
 }
 
 .mt-legal-body strong {
@@ -2931,7 +3178,7 @@ body {
 }
 
 .mt-orders-type-list a:hover {
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-orders-type-count {
@@ -3071,7 +3318,7 @@ body {
 .mt-orders-status-pill-open,
 .mt-orders-status-pill-approved {
     background: #E3F1EE;
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-orders-status-pill-pending {
@@ -3368,7 +3615,7 @@ body {
 .mt-reports-new-menu > li > a:hover,
 .mt-reports-new-menu > li > a:focus {
     background: #FAF8F4;
-    color: #0F6B63;
+    color: var(--mt-accent);
 }
 
 .mt-reports-footer {
@@ -3404,8 +3651,8 @@ body {
 .mt-report-tabset .nav-tabs > li.active > a:hover,
 .mt-report-tabset .nav-tabs > li.active > a:focus {
     background: transparent;
-    color: #0F6B63;
-    border-bottom-color: #0F6B63;
+    color: var(--mt-accent);
+    border-bottom-color: var(--mt-accent);
 }
 
 .mt-report-tabset .nav-tabs > li.disabled > a {
