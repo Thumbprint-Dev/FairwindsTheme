@@ -8,6 +8,26 @@ Template: Howdy
 :root {
     --mt-accent: #002C5F;
     --mt-accent-hover: #001E3D;
+    /* FAIRWINDS' brighter brand blue, kept alongside the navy accent for the places the live
+       store uses it: the value-bar icon discs and the section eyebrows. Held back from the
+       navy re-accent on purpose - see the "Value bar" block. */
+    --mt-brand-blue: #0077CC;
+    /* FAIRWINDS' secondary green. Footer column headings and social hover only. */
+    --mt-brand-green: #9BBF4E;
+    /* Gap between the sticky header and the first thing on an inner page. Every
+       page's inner wrapper below reads this, so it is the one place to retune that
+       spacing.
+
+       Do NOT put this on .mt-container. That class does three jobs - it is the
+       header's own row (.mt-header-row .mt-container), the hero's inner wrapper,
+       and the content wrapper on ordinary pages. A padding-top there pushes the nav
+       contents down and knocks the hero copy off centre, while the pages you were
+       trying to fix do not move at all: each inner wrapper below sets its own
+       padding-top and, being later in this file at equal specificity, wins.
+
+       The cart, checkout, messages, contact and legal pages sit on a deliberately
+       roomier 40px and are left out of this. */
+    --mt-page-top: 37px;
 }
 
 /* Stock Four51 theme (bootstrap-451.css) puts a fixed 100px gray margin below every page - with
@@ -48,41 +68,177 @@ body {
     background: #FAF8F4;
 }
 
-/* ===== ModernTheme: Footer ===== */
+/* ===== ModernTheme: Footer =====
+   Ported from the live FairwindsV2 store (its .fwf- block): navy gradient panel,
+   four link columns, then a rule and the copyright/legal row. The green (#9BBF4E)
+   on the column headings and social hover is the live store's secondary brand
+   colour and is deliberately the one place it appears in this theme. */
+
 .mt-footer {
-    background: #fff;
-    border-top: 1px solid #E8E4DA;
-    padding: 16px 0;
+    background: #002C5F;
+    background-image: linear-gradient(160deg, #002C5F 0%, #001E3D 100%);
+    color: #FFFFFF;
+    margin-top: 0;
+    padding: 0;
 }
 
-.mt-footer-inner {
+.mt-footer-top {
     display: flex;
+    flex-wrap: wrap;
+    padding: 56px 0 40px;
+    margin: 0 -16px;
+}
+
+.mt-footer-col {
+    flex: 1 1 220px;
+    padding: 0 16px 24px;
+    box-sizing: border-box;
+}
+
+.mt-footer-col-brand {
+    flex: 1 1 320px;
+}
+
+/* The logo is a dark-on-light mark, so it needs a light card to sit on rather than
+   being dropped straight onto the navy. The 1386x362 source renders 220px wide inside
+   the card's 20px side padding, i.e. ~57px tall - same as the live store. */
+.mt-footer-logo {
+    display: inline-block;
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 16px 20px;
+    max-width: 260px;
+    width: 100%;
+    /* Explicit rather than leaning on bootstrap-451.css's global * { border-box }:
+       the 260px cap has to include the padding or the mark renders oversized. */
+    box-sizing: border-box;
+    margin-bottom: 18px;
+}
+
+.mt-footer-logo img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.mt-footer-blurb {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, .74);
+    margin: 0 0 20px;
+    max-width: 320px;
+}
+
+.mt-footer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    margin: 0 8px 8px 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .28);
+    color: #FFFFFF;
+    transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.mt-footer-social a:hover,
+.mt-footer-social a:focus {
+    background: var(--mt-brand-green);
+    border-color: var(--mt-brand-green);
+    color: #001E3D;
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.mt-footer-h {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--mt-brand-green);
+    margin: 6px 0 18px;
+}
+
+.mt-footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mt-footer-list li {
+    margin-bottom: 11px;
+}
+
+.mt-footer-list a {
+    font-size: 14.5px;
+    color: rgba(255, 255, 255, .82);
+    text-decoration: none;
+    transition: color .16s ease, padding-left .16s ease;
+}
+
+.mt-footer-list a:hover,
+.mt-footer-list a:focus {
+    color: #FFFFFF;
+    text-decoration: none;
+    padding-left: 4px;
+}
+
+.mt-footer-rule {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, .16);
+    margin: 0;
+}
+
+.mt-footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
+    padding: 22px 0 26px;
 }
 
 .mt-footer-line {
     margin: 0;
-    font-size: 12px;
-    color: #726D5F;
+    font-size: 13px;
+    color: rgba(255, 255, 255, .66);
 }
 
 .mt-footer-line a {
-    color: #726D5F;
+    color: rgba(255, 255, 255, .66);
+}
+
+.mt-footer-line a:hover,
+.mt-footer-line a:focus {
+    color: #FFFFFF;
+}
+
+/* Conditions of Use / Terms of Use / Privacy Policy / Return Policy. Carried over
+   from the previous footer - the live store's row is missing Conditions of Use and
+   has no HideTerms gate, both of which this theme needs. */
+.mt-footer-legal {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.mt-footer-legal li {
+    margin-left: 22px;
 }
 
 .mt-footer-link {
-    font-size: 12px;
-    color: var(--mt-accent);
-    font-weight: 600;
+    font-size: 13px;
+    color: rgba(255, 255, 255, .66);
+    text-decoration: none;
+    font-weight: 400;
 }
 
-.mt-footer-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+.mt-footer-link:hover,
+.mt-footer-link:focus {
+    color: #FFFFFF;
+    text-decoration: none;
 }
 
 /* ===== ModernTheme: Home page (v1, placeholder pass) ===== */
@@ -120,6 +276,41 @@ body {
     text-transform: uppercase;
     color: #726D5F;
     margin: 0 0 18px;
+}
+
+/* Section head - eyebrow, title and one line of supporting copy, matching the
+   live FairwindsV2 store. Separate class names from the shared .mt-eyebrow,
+   which ~30 partials use as a plain standalone heading and which would change
+   everywhere if this treatment were folded into it. */
+
+.mt-section-head {
+    margin-bottom: 32px;
+}
+
+.mt-section-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--mt-brand-blue);
+    margin-bottom: 10px;
+}
+
+.mt-section-title {
+    font-size: 34px;
+    line-height: 1.2;
+    font-weight: 800;
+    color: var(--mt-accent);
+    margin: 0 0 8px;
+    letter-spacing: -0.5px;
+}
+
+.mt-section-sub {
+    font-size: 16px;
+    color: #5B6B7C;
+    margin: 0;
+    max-width: 620px;
 }
 
 /* The hero eyebrow and buttons are deliberately scoped under .mt-hero with their
@@ -251,8 +442,10 @@ body {
 
 /* ===== Value bar =====
    Sits directly under the hero as a row of four quick entry points. The SVG
-   stroke is currentColor and the icon disc follows --mt-accent, so this row
-   re-accents with everything else. */
+   stroke is currentColor and the icon disc follows --mt-brand-blue, so this
+   row stays on the brighter brand blue the live FairwindsV2 store uses. The
+   navy accent read as too heavy for four small discs sitting on white; titles
+   still use --mt-accent, which matches the live site's #002C5F exactly. */
 
 .mt-values {
     background: #FFFFFF;
@@ -283,7 +476,7 @@ body {
 
 .mt-value:hover .mt-value-t,
 .mt-value:focus .mt-value-t {
-    color: var(--mt-accent-hover);
+    color: var(--mt-brand-blue);
 }
 
 .mt-value-ic {
@@ -292,10 +485,10 @@ body {
     height: 44px;
     margin-right: 14px;
     border-radius: 50%;
-    /* Tint of the accent. Kept as its own declaration rather than a color-mix()
-       on the variable so it still renders on browsers without color-mix. */
-    background: rgba(0, 44, 95, .09);
-    color: var(--mt-accent);
+    /* Tint of --mt-brand-blue. Kept as its own declaration rather than a
+       color-mix() on the variable so it still renders on browsers without color-mix. */
+    background: rgba(0, 119, 204, .09);
+    color: var(--mt-brand-blue);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -314,6 +507,81 @@ body {
     color: #5B6B7C;
     margin: 0;
     line-height: 1.4;
+}
+
+/* ===== CTA band =====
+   Ported from the live store's .fw-cta: full-bleed navy gradient, copy on the
+   left, one green action on the right. */
+
+.mt-cta {
+    background: #002C5F;
+    background-image: linear-gradient(120deg, #001E3D 0%, #002C5F 55%, #0A4C8F 100%);
+    color: #FFFFFF;
+    padding: 60px 0;
+}
+
+.mt-cta-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.mt-cta-text {
+    flex: 1 1 460px;
+    padding-right: 24px;
+}
+
+.mt-cta h2 {
+    font-size: 30px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    letter-spacing: -.5px;
+    color: #FFFFFF;
+}
+
+.mt-cta p {
+    font-size: 16px;
+    color: rgba(255, 255, 255, .85);
+    margin: 0;
+}
+
+.mt-cta-act {
+    flex: 0 0 auto;
+    padding-top: 8px;
+}
+
+.mt-cta-btn {
+    display: inline-block;
+    padding: 14px 30px;
+    border-radius: 8px;
+    border: 2px solid var(--mt-brand-green);
+    background: var(--mt-brand-green);
+    color: #001E3D;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+    cursor: pointer;
+}
+
+.mt-cta-btn:hover,
+.mt-cta-btn:focus {
+    background: #A9CC63;
+    border-color: #A9CC63;
+    color: #001E3D;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+/* Both this band and the footer are navy, so with nothing between them they read
+   as one slab and the CTA loses its edge. This white strip stands in for the
+   Featured carousel when there is nothing to feature - deep enough to read as a
+   deliberate break rather than a seam. */
+.mt-cta-gap {
+    height: 96px;
+    background: #FFFFFF;
 }
 
 .mt-btn-accent {
@@ -560,6 +828,156 @@ body {
     display: flex;
 }
 
+/* ===== Featured band =====
+   The live store's featured section: a pale wash behind the row, and its product
+   card in place of this theme's. Everything here is scoped to .mt-featured-wash /
+   .mt-carousel-card on purpose - mtProductCard.html is shared with the PLP and the
+   search results, which keep the existing card. */
+
+.mt-featured-wash {
+    background: #F6F8FA;
+}
+
+/* The head sits beside the carousel arrows, so it must not carry the standalone
+   bottom margin .mt-section-head uses elsewhere. */
+.mt-section-head-flush {
+    margin-bottom: 0;
+}
+
+.mt-featured-wash .mt-carousel-header {
+    align-items: flex-end;
+    margin-bottom: 28px;
+}
+
+.mt-carousel-card .mt-product-card {
+    border: 1px solid #E3E8EE;
+    border-radius: 14px;
+    padding: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+.mt-carousel-card .mt-product-card:hover,
+.mt-carousel-card .mt-product-card:focus-within {
+    transform: translateY(-4px);
+    border-color: #CBD6E2;
+    box-shadow: 0 14px 30px rgba(16, 32, 48, .13);
+}
+
+/* Media panel: full-bleed to the card edges, on the same wash as the band. */
+.mt-carousel-card .mt-placeholder-photo {
+    background-color: #F6F8FA;
+    border-radius: 0;
+    padding: 22px;
+    margin: 0;
+}
+
+.mt-carousel-card .mt-real-photo {
+    background-image: none;
+}
+
+.mt-carousel-card .mt-product-name {
+    padding: 18px 18px 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #16202B;
+    line-height: 1.35;
+    margin: 0 0 10px;
+}
+
+.mt-carousel-card .mt-product-card .mt-pdp-sku {
+    padding: 0 18px;
+    margin: 0 0 6px;
+}
+
+.mt-carousel-card .mt-product-price {
+    padding: 0 18px;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--mt-accent);
+}
+
+.mt-carousel-card .mt-product-card-add {
+    width: auto;
+    margin: 14px 18px 18px;
+}
+
+.mt-carousel-card .mt-product-card-note {
+    padding: 0 18px 16px;
+}
+
+/* Bits the live store's card has that this theme's does not: a category eyebrow, a
+   corner tag, and a price row with a "View" affordance. Only the placeholder cards
+   use them today - real featured products render mtProductCard.html, which has a
+   working Add to cart button instead. */
+.mt-product-cat {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+    color: #5B6B7C;
+    margin: 0;
+    padding: 18px 18px 0;
+}
+
+.mt-carousel-card .mt-product-cat + .mt-product-name {
+    padding-top: 6px;
+}
+
+.mt-product-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px 20px;
+}
+
+.mt-product-foot .mt-product-price {
+    padding: 0;
+}
+
+.mt-product-go {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--mt-brand-blue);
+}
+
+.mt-product-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: var(--mt-brand-green);
+    color: #001E3D;
+}
+
+.mt-product-tag-new {
+    background: var(--mt-brand-blue);
+    color: #FFFFFF;
+}
+
+/* The sample artwork sits on the flat wash, not the theme's diagonal-stripe
+   "no photo yet" hatching, and needs to anchor the absolutely positioned tag. */
+.mt-sample-art {
+    position: relative;
+    display: block;
+    background-image: none;
+    text-align: center;
+}
+
+.mt-sample-art svg {
+    width: 100%;
+    max-width: 170px;
+    height: auto;
+}
+
 .mt-carousel-card {
     flex: 0 0 25%;
     max-width: 25%;
@@ -569,6 +987,13 @@ body {
 }
 
 @media (max-width: 991px) {
+    /* The live store steps this down three times (190/155/160px) because its header
+       row also carries nav links. This one does not - those were deliberately left
+       out - so the logo only needs the one step. */
+    .mt-brand-logo {
+        max-width: 180px;
+    }
+
     .mt-carousel-card {
         flex: 0 0 50%;
         max-width: 50%;
@@ -594,6 +1019,69 @@ body {
 }
 
 @media (max-width: 767px) {
+    .mt-cta {
+        text-align: center;
+        padding: 44px 0;
+    }
+
+    .mt-cta-grid {
+        justify-content: center;
+    }
+
+    .mt-cta-text {
+        padding-right: 0;
+        padding-bottom: 20px;
+    }
+
+    .mt-cta h2 {
+        font-size: 24px;
+    }
+
+    .mt-cta-gap {
+        height: 64px;
+    }
+
+    .mt-footer-top {
+        padding: 40px 0 24px;
+        text-align: center;
+    }
+
+    .mt-footer-col {
+        flex: 1 1 100%;
+    }
+
+    .mt-footer-blurb {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .mt-footer-list a:hover {
+        padding-left: 0;
+    }
+
+    .mt-footer-bottom {
+        justify-content: center;
+        text-align: center;
+        padding-bottom: 30px;
+    }
+
+    .mt-footer-line {
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+    .mt-footer-legal {
+        justify-content: center;
+    }
+
+    .mt-footer-legal li {
+        margin: 0 11px;
+    }
+
+    .mt-section-title {
+        font-size: 26px;
+    }
+
     .mt-carousel-card {
         flex: 0 0 100%;
         max-width: 100%;
@@ -690,7 +1178,12 @@ body {
 }
 
 .mt-brand-logo {
-    max-height: 32px;
+    /* Sized by width like the live header. 250px is the width its own <img> asks
+       for; its stylesheet then caps the mark at 215, which read small here against
+       this theme's roomier row, so the markup's intent wins. The 1308x272 source
+       lands at 250x52. No max-height clamp: the source is a known wide lockup. */
+    max-width: 250px;
+    height: auto;
 }
 
 .mt-search {
@@ -753,29 +1246,219 @@ body {
     border-color: var(--mt-accent);
 }
 
-.mt-cart-badge {
+/* Cart, ported from the live store: a bare navy glyph rather than a bordered text
+   button, with the count in a green pill overhanging the top-right. The
+   padding-right matches that overhang so the badge cannot sit outside the header
+   row and give the page a horizontal scrollbar at narrow desktop widths. */
+.mt-cart-btn {
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+    margin-left: 6px;
+    padding-right: 11px;
+    text-decoration: none;
+}
+
+.mt-cart-btn .fa-shopping-cart {
+    color: var(--mt-accent);
+    font-size: 21px;
+    transition: color .18s ease;
+}
+
+.mt-cart-btn:hover .fa-shopping-cart,
+.mt-cart-btn:focus .fa-shopping-cart {
+    color: var(--mt-brand-blue);
+}
+
+/* Header text link (Orders). Borderless, with the live store's underline: a
+   gradient rule that wipes in from the left on hover and back out to the right.
+   The .mt-nav-item wrapper carries it because the rule has to span the padded
+   link box, and .active pins it in navy for the current section. */
+.mt-nav-item {
+    position: relative;
+    display: inline-block;
+}
+
+.mt-nav-link {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 8px 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mt-accent);
+    letter-spacing: .1px;
+    text-decoration: none;
+    transition: color .22s ease;
+}
+
+.mt-nav-link:hover,
+.mt-nav-link:focus {
+    color: var(--mt-brand-blue);
+    text-decoration: none;
+}
+
+.mt-nav-item:after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #0077CC 0%, #9BBF4E 100%);
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform .32s cubic-bezier(.4, 0, .2, 1);
+}
+
+.mt-nav-item:hover:after,
+.mt-nav-item:focus-within:after {
+    transform: scaleX(1);
+    transform-origin: left center;
+}
+
+.mt-nav-item.active:after {
+    transform: scaleX(1);
+    transform-origin: left center;
     background: var(--mt-accent);
-    color: #fff;
-    font-size: 11px;
+}
+
+.mt-nav-item.active > .mt-nav-link {
     font-weight: 700;
-    border-radius: 999px;
-    min-width: 18px;
-    height: 18px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+}
+
+.mt-cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -11px;
+    min-width: 19px;
+    height: 19px;
     padding: 0 5px;
+    border-radius: 10px;
+    background: var(--mt-brand-green);
+    color: #001E3D;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 19px;
+    text-align: center;
 }
 
 .mt-account {
     position: relative;
 }
 
+/* Icon button, sized and coloured to sit as a pair with the cart glyph. */
+.mt-account-btn {
+    display: inline-block;
+    line-height: 1;
+    margin-left: 14px;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.mt-account-btn .fa-user {
+    color: var(--mt-accent);
+    font-size: 20px;
+    transition: color .18s ease;
+}
+
+.mt-account-btn:hover .fa-user,
+.mt-account-btn:focus .fa-user,
+.mt-account:hover .mt-account-btn .fa-user,
+.mt-account.open .mt-account-btn .fa-user {
+    color: var(--mt-brand-blue);
+}
+
+/* Menu styling ported from the live store. */
 .mt-account .dropdown-menu {
     font-family: 'Inter', 'Droid Sans', sans-serif;
+    background-color: #FFFFFF;
+    border: 1px solid #E3E8EE;
+    border-radius: 12px;
+    box-shadow: 0 16px 34px rgba(16, 32, 48, .16);
+    padding: 8px;
+    margin-top: 0;
+    min-width: 230px;
+}
+
+/* Opens on hover. Kept on visibility/opacity rather than display so the menu can
+   fade, and given the live store's 400ms grace period on the way out: the pointer
+   has to cross a gap between the icon and the menu, and a plain display toggle
+   dropped it mid-crossing. The menu stays hoverable for that whole window. */
+.mt-account.dropdown > .dropdown-menu {
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity .18s ease .4s, transform .18s ease .4s, visibility 0s linear .58s;
+}
+
+.mt-account.dropdown:hover > .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: opacity .16s ease 0s, transform .16s ease 0s, visibility 0s linear 0s;
+}
+
+/* Separate rule on purpose: :focus-within is unknown to older engines, and sharing
+   a selector list with the :hover rule above would invalidate that one too. This is
+   also what keeps the menu reachable by keyboard now that hover opens it. */
+.mt-account.dropdown:focus-within > .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 0s, 0s, 0s;
+}
+
+/* Click still works: Bootstrap toggles .open, which has to win over the base rule. */
+.mt-account.dropdown.open > .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 0s, 0s, 0s;
+}
+
+.mt-account .dropdown-menu > li > a {
+    color: #16202B;
+    background: transparent;
+    font-size: 14px;
+    padding: 10px 14px;
     border-radius: 8px;
-    border-color: #E8E4DA;
-    margin-top: 6px;
+}
+
+.mt-account .dropdown-menu > li > a:hover,
+.mt-account .dropdown-menu > li > a:focus {
+    color: var(--mt-accent);
+    background: #F0F5FA;
+}
+
+/* Leading icon on each account item. The live store has none (only Log Out carries
+   one) - these are added here. Fixed width so the labels stay on one optical column
+   however wide the individual glyph is. */
+.mt-account .dropdown-menu > li > a > .fa {
+    width: 16px;
+    margin-right: 9px;
+    text-align: center;
+    font-size: 13px;
+    color: #9A9384;
+}
+
+.mt-account .dropdown-menu > li > a:hover > .fa,
+.mt-account .dropdown-menu > li > a:focus > .fa {
+    color: var(--mt-accent);
+}
+
+/* Log Out keeps the live store's red glyph, so it stays the odd one out on purpose. */
+.mt-account .dropdown-menu > li > a > .fa.text-danger,
+.mt-account .dropdown-menu > li > a:hover > .fa.text-danger {
+    color: #C9302C;
+}
+
+/* The live store's 4px brand gradient, sitting under the header row. */
+.mt-header-decoration {
+    height: 4px;
+    background: linear-gradient(90deg, #002C5F 0%, #0077CC 55%, #9BBF4E 100%);
 }
 
 .mt-cat-nav {
@@ -893,7 +1576,7 @@ body {
     /* top/bottom only - see the identical fix and explanation on .mt-section. This is combined
        with .mt-container on the same element (categoryView.html's breadcrumb/title row), so a
        padding shorthand here would zero out .mt-container's own left/right padding. */
-    padding-top: 24px;
+    padding-top: var(--mt-page-top);
     padding-bottom: 8px;
 }
 
@@ -1039,7 +1722,7 @@ body {
 }
 
 .mt-pdp-inner {
-    padding-top: 24px;
+    padding-top: var(--mt-page-top);
 }
 
 .mt-pdp-image-wrap {
@@ -2570,7 +3253,7 @@ body {
 }
 
 .mt-account-inner {
-    padding-top: 24px;
+    padding-top: var(--mt-page-top);
 }
 
 .mt-account-mobile-nav {
@@ -2653,7 +3336,7 @@ body {
 }
 
 .mt-addresses-inner {
-    padding-top: 24px;
+    padding-top: var(--mt-page-top);
 }
 
 .mt-addresses-header {
@@ -2794,7 +3477,7 @@ body {
 }
 
 .mt-address-edit-inner {
-    padding-top: 24px;
+    padding-top: var(--mt-page-top);
 }
 
 .mt-address-edit-inner .mt-pdp-title {
@@ -3121,7 +3804,7 @@ body {
 .mt-order-detail-inner,
 .mt-line-item-detail-inner,
 .mt-favorites-inner {
-    padding-top: 24px;
+    padding-top: var(--mt-page-top);
 }
 
 .mt-orders .mt-pdp-title,
@@ -3536,7 +4219,7 @@ body {
 
 .mt-reports-inner,
 .mt-report-view-inner {
-    padding-top: 24px;
+    padding-top: var(--mt-page-top);
 }
 
 .mt-reports .mt-pdp-title,

@@ -1,8 +1,10 @@
 <header class="mt-header" role="banner">
     <div class="mt-header-row mt-container">
         <a id="451qa_home_link" href="catalog" class="mt-brand" ng-show="Four51User.isAuthenticated()" aria-label="{{'Go to store home' | r | xlat}}">
-            <img ng-if="user.Company.LogoUrl" ng-src="{{user.Company.LogoUrl}}" class="mt-brand-logo" alt="{{user.Company.Name || 'Storefront'}}" />
-            <span ng-if="!user.Company.LogoUrl">{{user.Company.Name || 'Storefront'}}</span>
+            <!-- The live store's header mark. It reads user.Company.LogoUrl too, but
+                 commented it out in favour of this file (headerNavigation.js) - that
+                 logo is not the wide horizontal lockup and renders undersized here. -->
+            <img class="mt-brand-logo" src="https://thumbprint.com/four51_images/store_logos/fairwinds_logo.png" alt="{{user.Company.Name || 'FAIRWINDS Credit Union'}}" />
         </a>
 
         <form class="mt-search hidden-xs" ng-submit="doSearch()" role="search">
@@ -15,48 +17,49 @@
                 <span class="mt-budget-label">{{primarySpendingAccount.Label}}</span>
                 <span class="mt-budget-value">{{primarySpendingAccount.Balance | culturecurrency}} {{'available' | r | xlat}}</span>
             </div>
-            <a id="451qa_order_link" href="order" class="mt-header-btn hidden-xs" ng-if="user.Type == 'Customer'">
-                {{'Order History' | r | xlat}}
-            </a>
-            <a id="451qa_cart_link" href="cart" class="mt-header-btn mt-cart-btn" aria-label="{{'View cart' | r | xlat}}">
-                {{'Cart' | r | xlat}}
+            <span class="mt-nav-item hidden-xs" ng-if="user.Type == 'Customer'" ng-class="{'active': isActive('order')}">
+                <a id="451qa_order_link" href="order" class="mt-nav-link">{{'Orders' | r | xlat}}</a>
+            </span>
+            <a id="451qa_cart_link" href="cart" class="mt-cart-btn" title="{{'Cart' | r | xlat}}" aria-label="{{'View cart' | r | xlat}}">
+                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                 <span class="mt-cart-badge" ng-if="cartCount">{{cartCount}}</span>
             </a>
             <div class="dropdown mt-account" ng-class="{'active': isActive(['admin', 'addresses', 'address', 'messages', 'message', 'favoriteorders'])}">
-                <a id="451qa_acct_link2" class="mt-header-btn dropdown-toggle" data-toggle="dropdown" aria-label="{{'Account' | r | xlat}}">
-                    <span ng-if="user.FirstName">{{user.FirstName}} {{(user.LastName || '')[0]}}</span><span ng-if="!user.FirstName">{{'Account' | r | xlat}}</span>
-                    <b class="caret"></b>
+                <a id="451qa_acct_link2" class="mt-account-btn dropdown-toggle" data-toggle="dropdown"
+                   title="{{user.FirstName ? user.FirstName + ' ' + (user.LastName || '') : ('Account' | r | xlat)}}"
+                   aria-label="{{'Account' | r | xlat}}" aria-haspopup="true">
+                    <i class="fa fa-user" aria-hidden="true"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li id="451qa_user_link" ng-show="user.Permissions.contains('ViewSelfAdmin')" class="admin">
-                        <a href="admin">{{'User Information' | r | xlat}}</a>
+                        <a href="admin"><i class="fa fa-user" aria-hidden="true"></i>{{'User Information' | r | xlat}}</a>
                     </li>
                     <li id="451qa_addy_link" ng-show="user.Type == 'Customer' && (user.Permissions.contains('CreateShipToAddress') || user.Permissions.contains('CreateBillToAddress'))" class="addresses">
-                        <a href="addresses">{{'Addresses' | r | xlat}}</a>
+                        <a href="addresses"><i class="fa fa-map-marker" aria-hidden="true"></i>{{'Addresses' | r | xlat}}</a>
                     </li>
                     <li id="451qa_mesg_link" ng-show="user.Type == 'Customer' && user.Permissions.contains('ViewMessaging')" class="messages">
-                        <a href="message">{{'Messages' | r | xlat}}</a>
+                        <a href="message"><i class="fa fa-envelope" aria-hidden="true"></i>{{'Messages' | r | xlat}}</a>
                     </li>
                     <li class="favorites" ng-show="user.Type == 'Customer'">
-                        <a id="451qa_fave_link" href="favoriteorders">{{'Favorite Orders' | r | xlat}}</a>
+                        <a id="451qa_fave_link" href="favoriteorders"><i class="fa fa-heart" aria-hidden="true"></i>{{'Favorite Orders' | r | xlat}}</a>
                     </li>
                     <li ng-show="user.Type == 'Customer' && user.Permissions.contains('AdvancedReporting')">
-                        <a id="451qa_reports_link" href="reports">{{'Reports' | r | xlat}}</a>
+                        <a id="451qa_reports_link" href="reports"><i class="fa fa-bar-chart-o" aria-hidden="true"></i>{{'Reports' | r | xlat}}</a>
                     </li>
                     <li id="451qa_contact_link" ng-show="user.Permissions.contains('ViewContactUs')" class="contactus">
-                        <a href="contactus">{{'Contact Us' | r | xlat}}</a>
+                        <a href="contactus"><i class="fa fa-comments" aria-hidden="true"></i>{{'Contact Us' | r | xlat}}</a>
                     </li>
                     <li>
                         <a href="#" neworder ng-if="user.Permissions.contains('MultipleShoppingCart') && currentOrder" class="neworder" ng-click="newOrderLoadingIndicator = true;startNewOrder()">
-                            {{"Start" | r | xlat}} {{"New" | r | xlat}} {{"Order" | r | xlat}}
+                            <i class="fa fa-plus" aria-hidden="true"></i>{{"Start" | r | xlat}} {{"New" | r | xlat}} {{"Order" | r | xlat}}
                         </a>
                     </li>
                     <li class="divider" ng-show="user.Type!='TempCustomer' || AppConst.debug"></li>
                     <li ng-show="user.Type!='TempCustomer'" class="logout">
-                        <a href="#" class="451_btn_logout" ng-click="Logout()">{{'Log Out' | r | xlat}}</a>
+                        <a href="#" class="451_btn_logout" ng-click="Logout()"><i class="fa fa-power-off text-danger" aria-hidden="true"></i>{{'Log Out' | r | xlat}}</a>
                     </li>
                     <li ng-if="AppConst.debug">
-                        <a href="#" ng-click="Clear()">{{'Clear Cache' | r | xlat}}</a>
+                        <a href="#" ng-click="Clear()"><i class="fa fa-archive" aria-hidden="true"></i>{{'Clear Cache' | r | xlat}}</a>
                     </li>
                 </ul>
             </div>
@@ -73,4 +76,9 @@
             </div>
         </div>
     </nav>
+
+    <!-- The live store's 4px brand gradient. Sits at the bottom edge of the whole
+         header, below the category row, rather than directly under the logo row as
+         it does there - the category nav is this theme's and has no equivalent. -->
+    <div class="mt-header-decoration" aria-hidden="true"></div>
 </header>

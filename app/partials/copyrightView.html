@@ -1,14 +1,99 @@
+<!-- Footer ported from the live FairwindsV2 store: four-column navy footer with a
+     brand column, then the legal row along the bottom. Two things are deliberately
+     different from the live markup:
+       - links are driven by the same scope data and permission gates the header nav
+         uses (nav.html), rather than the live site's hardcoded placeholder hrefs, so
+         nothing here points at a page the signed-in user cannot open;
+       - the styles live in custom.css with the rest of the theme instead of an inline
+         <style> block. -->
 <footer class="mt-footer">
-    <div class="mt-container mt-footer-inner">
-        <p class="mt-footer-line">
-            <a href="https://thumbprint.com" target="_blank">{{'Powered by' | xlat}} Thumbprint</a>
-            &middot; {{'Copyright' | xlat}} © {{year}} Thumbprint. {{'All Rights Reserved' | xlat}}.
-        </p>
-        <span class="mt-footer-links" ng-if="!(user.Permissions.contains('HideTerms'))">
-            <a class="mt-footer-link" href="conditions">{{'Conditions of Use' | xlat}}</a>
-            <a class="mt-footer-link" href="https://thumbprint.com/terms-of-use/" target="_blank" rel="noopener">{{'Terms of Use' | xlat}}</a>
-            <a class="mt-footer-link" href="https://thumbprint.com/privacy/" target="_blank" rel="noopener">{{'Privacy Policy' | xlat}}</a>
-            <a class="mt-footer-link" href="https://thumbprint.com/return-policy-and-limited-warranty/" target="_blank" rel="noopener">{{'Return Policy' | xlat}}</a>
-        </span>
+    <div class="mt-container">
+
+        <div class="mt-footer-top">
+
+            <div class="mt-footer-col mt-footer-col-brand">
+                <!-- The same horizontal mark the live store uses. Deliberately not
+                     user.Company.LogoUrl: that image has different proportions, and since
+                     the card sizes the logo by width, it rendered at the wrong height here. -->
+                <span class="mt-footer-logo">
+                    <img src="https://thumbprint.com/four51_images/Fairwinds_HORIZ_PMS-654.jpg" alt="FAIRWINDS Credit Union" />
+                </span>
+                <p class="mt-footer-blurb">{{'The official company store — branded apparel, drinkware and everyday essentials for our team.' | xlat}}</p>
+                <div class="mt-footer-social">
+                    <a href="https://www.fairwinds.org/" target="_blank" rel="noopener" title="fairwinds.org" aria-label="fairwinds.org">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    </a>
+                    <a href="contactus" ng-show="user.Permissions.contains('ViewContactUs')" title="{{'Contact Us' | xlat}}" aria-label="{{'Contact Us' | xlat}}">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- The live site hardcodes four category names that all point at the catalog
+                 root, with a TODO to swap in real InteropIDs. They are available here:
+                 `tree` is set on Four51Ctrl and this directive inherits that scope. -->
+            <div class="mt-footer-col" ng-if="tree.length">
+                <p class="mt-footer-h">{{'Shop' | xlat}}</p>
+                <ul class="mt-footer-list">
+                    <li><a href="catalog">{{'All products' | xlat}}</a></li>
+                    <li ng-repeat="cat in tree | limitTo:4">
+                        <a ng-href="catalog/{{cat.InteropID}}" ng-bind-html="cat.Name"></a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="mt-footer-col">
+                <p class="mt-footer-h">{{'My account' | xlat}}</p>
+                <ul class="mt-footer-list">
+                    <li ng-show="user.Permissions.contains('ViewSelfAdmin')">
+                        <a href="admin">{{'User Information' | xlat}}</a>
+                    </li>
+                    <li ng-show="user.Type == 'Customer'">
+                        <a href="order">{{'Order history' | xlat}}</a>
+                    </li>
+                    <li ng-show="user.Type == 'Customer'">
+                        <a href="favoriteorders">{{'Favorite Orders' | xlat}}</a>
+                    </li>
+                    <li ng-show="user.Type == 'Customer' && (user.Permissions.contains('CreateShipToAddress') || user.Permissions.contains('CreateBillToAddress'))">
+                        <a href="addresses">{{'Addresses' | xlat}}</a>
+                    </li>
+                    <li ng-show="user.Type == 'Customer' && user.Permissions.contains('ViewMessaging')">
+                        <a href="message">{{'Messages' | xlat}}</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="mt-footer-col">
+                <p class="mt-footer-h">{{'Support' | xlat}}</p>
+                <ul class="mt-footer-list">
+                    <li ng-show="user.Permissions.contains('ViewContactUs')">
+                        <a href="contactus">{{'Contact Us' | xlat}}</a>
+                    </li>
+                    <li>
+                        <a href="https://thumbprint.com/return-policy-and-limited-warranty/" target="_blank" rel="noopener">{{'Return Policy' | xlat}}</a>
+                    </li>
+                    <li>
+                        <a href="https://www.fairwinds.org/" target="_blank" rel="noopener">fairwinds.org</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <hr class="mt-footer-rule" />
+
+        <div class="mt-footer-bottom">
+            <p class="mt-footer-line">
+                {{'Copyright' | xlat}} © {{year}} {{user.Company.Name || 'FAIRWINDS Credit Union'}}.
+                {{'Store powered by' | xlat}} <a href="https://thumbprint.com" target="_blank" rel="noopener">Thumbprint</a>.
+            </p>
+            <ul class="mt-footer-legal" ng-if="!(user.Permissions.contains('HideTerms'))">
+                <li><a class="mt-footer-link" href="conditions">{{'Conditions of Use' | xlat}}</a></li>
+                <li><a class="mt-footer-link" href="https://thumbprint.com/terms-of-use/" target="_blank" rel="noopener">{{'Terms of Use' | xlat}}</a></li>
+                <li><a class="mt-footer-link" href="https://thumbprint.com/privacy/" target="_blank" rel="noopener">{{'Privacy Policy' | xlat}}</a></li>
+                <li><a class="mt-footer-link" href="https://thumbprint.com/return-policy-and-limited-warranty/" target="_blank" rel="noopener">{{'Return Policy' | xlat}}</a></li>
+            </ul>
+        </div>
+
     </div>
 </footer>

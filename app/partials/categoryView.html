@@ -103,7 +103,11 @@
     </div>
 
     <div class="mt-container mt-section" ng-if="shopByCategories.length">
-        <h2 class="mt-eyebrow">{{'Shop by category' | r | xlat}}</h2>
+        <div class="mt-section-head">
+            <span class="mt-section-eyebrow">{{'Browse the store' | r | xlat}}</span>
+            <h2 class="mt-section-title">{{'Shop by category' | r | xlat}}</h2>
+            <p class="mt-section-sub">{{'Four collections, all on brand and ready to order.' | r | xlat}}</p>
+        </div>
         <div class="row">
             <div class="col-sm-3" ng-repeat="dept in shopByCategories">
                 <a ng-href="catalog/{{dept.InteropID}}" class="mt-dept-tile">
@@ -115,20 +119,152 @@
         </div>
     </div>
 
-    <div class="mt-container mt-section" ng-if="featuredProducts.length">
-        <div class="mt-carousel-header">
-            <h2 class="mt-eyebrow">{{'Featured for your team' | r | xlat}}</h2>
-            <div class="mt-carousel-controls" ng-if="featuredProducts.length > 4">
-                <button type="button" class="mt-header-btn" ng-click="featuredPrev()" aria-label="{{'Previous' | r | xlat}}">&lsaquo;</button>
-                <button type="button" class="mt-header-btn" ng-click="featuredNext()" aria-label="{{'Next' | r | xlat}}">&rsaquo;</button>
+    <!-- CTA band, ported from the live store. Deliberately ungated: the live store
+         shows it to everyone, and the value bar above already links to contactus
+         without a permission check. -->
+    <section class="mt-cta">
+        <div class="mt-container mt-cta-grid">
+            <div class="mt-cta-text">
+                <h2>{{'Need something you don’t see here?' | r | xlat}}</h2>
+                <p>{{'Tell us what you have in mind and we will source it, brand it and get it to your team.' | r | xlat}}</p>
+            </div>
+            <div class="mt-cta-act">
+                <a href="contactus" class="mt-cta-btn">{{'Contact us' | r | xlat}}</a>
             </div>
         </div>
-        <div class="mt-carousel-viewport" mt-featured-carousel>
-            <div class="mt-carousel-track">
-                <div class="mt-carousel-card" ng-repeat="product in featuredProducts" ng-include="'partials/controls/mtProductCard.html'"></div>
+    </section>
+    <!-- Featured, on the live store's wash band with its section head and card
+         treatment. The products themselves stay bound to featuredProducts (the
+         Featured category from the API) - the live store's are hardcoded sample
+         items with invented names and prices, marked PLACEHOLDER MERCHANDISING in
+         its own source, so only the presentation is taken from it. -->
+    <section class="mt-featured-wash" ng-if="featuredProducts.length">
+        <div class="mt-container mt-section">
+            <div class="mt-carousel-header">
+                <div class="mt-section-head mt-section-head-flush">
+                    <span class="mt-section-eyebrow">{{'Picked for you' | r | xlat}}</span>
+                    <h2 class="mt-section-title">{{'Featured for your team' | r | xlat}}</h2>
+                    <p class="mt-section-sub">{{'A rotating selection from the catalog, all on brand and ready to order.' | r | xlat}}</p>
+                </div>
+                <div class="mt-carousel-controls" ng-if="featuredProducts.length > 4">
+                    <button type="button" class="mt-header-btn" ng-click="featuredPrev()" aria-label="{{'Previous' | r | xlat}}">&lsaquo;</button>
+                    <button type="button" class="mt-header-btn" ng-click="featuredNext()" aria-label="{{'Next' | r | xlat}}">&rsaquo;</button>
+                </div>
+            </div>
+            <div class="mt-carousel-viewport" mt-featured-carousel>
+                <div class="mt-carousel-track">
+                    <div class="mt-carousel-card" ng-repeat="product in featuredProducts" ng-include="'partials/controls/mtProductCard.html'"></div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- ==================== PLACEHOLDER MERCHANDISING ====================
+         Sample cards copied from the live FairwindsV2 store. The names, prices and
+         artwork are INVENTED - they exist so the featured row can be reviewed while
+         the Featured category is empty, and they link to the catalog rather than to
+         a product, so nothing here can be priced or added to a cart.
+
+         This whole block disappears on its own as soon as the Featured category in
+         Four51 has products: the real carousel above is ng-if="featuredProducts.length"
+         and this is its inverse. Delete it once that is populated.
+
+         Note: this band is also what now keeps the navy CTA above off the navy
+         footer. If you delete this block and still have no featured products,
+         restore the .mt-cta-gap white strip under the CTA. -->
+    <section class="mt-featured-wash" ng-if="!featuredProducts.length">
+        <div class="mt-container mt-section">
+            <div class="mt-carousel-header">
+                <div class="mt-section-head mt-section-head-flush">
+                    <span class="mt-section-eyebrow">{{'Placeholder merchandising' | r | xlat}}</span>
+                    <h2 class="mt-section-title">{{'Featured this season' | r | xlat}}</h2>
+                    <p class="mt-section-sub">{{'Sample products shown for layout review — swap in the real FAIRWINDS catalog.' | r | xlat}}</p>
+                </div>
+            </div>
+            <div class="mt-carousel-viewport">
+                <div class="mt-carousel-track">
+                    <div class="mt-carousel-card">
+                        <div class="mt-product-card">
+                            <a href="catalog" class="mt-product-card-link">
+                                <div class="mt-placeholder-photo mt-sample-art">
+                                    <span class="mt-product-tag">Best seller</span>
+                                    <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false"><path d="M70 30 L95 22 Q100 36 112 36 Q124 36 129 22 L154 30 L176 62 L150 78 L150 172 Q112 180 74 172 L74 78 L48 62 Z" fill="#002C5F"/><path d="M95 22 Q100 36 112 36 Q124 36 129 22 L120 20 Q112 30 104 20 Z" fill="#FFFFFF" opacity=".35"/><circle cx="132" cy="98" r="8" fill="#9BBF4E"/></svg>
+                                </div>
+                                <p class="mt-product-cat">Apparel</p>
+                                <p class="mt-product-name">FAIRWINDS Performance Polo</p>
+                                <div class="mt-product-foot">
+                                    <span class="mt-product-price">$34.00</span>
+                                    <span class="mt-product-go">{{'View' | r | xlat}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-carousel-card">
+                        <div class="mt-product-card">
+                            <a href="catalog" class="mt-product-card-link">
+                                <div class="mt-placeholder-photo mt-sample-art">
+                                    <span class="mt-product-tag mt-product-tag-new">New</span>
+                                    <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false"><path d="M70 30 L95 22 Q100 40 112 40 Q124 40 129 22 L154 30 L176 62 L150 78 L150 172 Q112 180 74 172 L74 78 L48 62 Z" fill="#0A4C8F"/><path d="M100 84 L112 60 L108 96 L124 92 L100 138 L104 102 L88 106 Z" fill="#FFFFFF" opacity=".55"/></svg>
+                                </div>
+                                <p class="mt-product-cat">Apparel</p>
+                                <p class="mt-product-name">Sailboat Logo Tee</p>
+                                <div class="mt-product-foot">
+                                    <span class="mt-product-price">$22.00</span>
+                                    <span class="mt-product-go">{{'View' | r | xlat}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-carousel-card">
+                        <div class="mt-product-card">
+                            <a href="catalog" class="mt-product-card-link">
+                                <div class="mt-placeholder-photo mt-sample-art">
+                                    <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false"><path d="M70 30 L95 22 L129 22 L154 30 L176 62 L150 78 L150 172 Q112 180 74 172 L74 78 L48 62 Z" fill="#001E3D"/><rect x="96" y="22" width="8" height="86" fill="#FFFFFF" opacity=".5"/><rect x="94" y="100" width="12" height="10" rx="3" fill="#9BBF4E"/></svg>
+                                </div>
+                                <p class="mt-product-cat">Apparel</p>
+                                <p class="mt-product-name">Navy Quarter-Zip Pullover</p>
+                                <div class="mt-product-foot">
+                                    <span class="mt-product-price">$58.00</span>
+                                    <span class="mt-product-go">{{'View' | r | xlat}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-carousel-card">
+                        <div class="mt-product-card">
+                            <a href="catalog" class="mt-product-card-link">
+                                <div class="mt-placeholder-photo mt-sample-art">
+                                    <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false"><path d="M34 122 Q34 56 100 56 Q166 56 166 122 L166 130 Q100 122 34 130 Z" fill="#002C5F"/><path d="M30 132 Q100 122 170 132 Q178 148 166 154 L34 154 Q22 148 30 132 Z" fill="#0A4C8F"/><circle cx="100" cy="96" r="13" fill="#9BBF4E"/></svg>
+                                </div>
+                                <p class="mt-product-cat">Headwear</p>
+                                <p class="mt-product-name">Structured Logo Cap</p>
+                                <div class="mt-product-foot">
+                                    <span class="mt-product-price">$24.00</span>
+                                    <span class="mt-product-go">{{'View' | r | xlat}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-carousel-card">
+                        <div class="mt-product-card">
+                            <a href="catalog" class="mt-product-card-link">
+                                <div class="mt-placeholder-photo mt-sample-art">
+                                    <span class="mt-product-tag">Best seller</span>
+                                    <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false"><rect x="64" y="24" width="72" height="18" rx="6" fill="#0A4C8F"/><path d="M70 50 L130 50 L140 74 L134 170 Q100 180 66 170 L60 74 Z" fill="#002C5F"/><rect x="80" y="92" width="40" height="6" rx="3" fill="#9BBF4E"/></svg>
+                                </div>
+                                <p class="mt-product-cat">Drinkware</p>
+                                <p class="mt-product-name">Insulated Tumbler, 20&nbsp;oz</p>
+                                <div class="mt-product-foot">
+                                    <span class="mt-product-price">$28.00</span>
+                                    <span class="mt-product-go">{{'View' | r | xlat}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 </section>
 
