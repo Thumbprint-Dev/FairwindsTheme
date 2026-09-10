@@ -14,6 +14,14 @@ Template: Howdy
     --mt-brand-blue: #0077CC;
     /* FAIRWINDS' secondary green. Footer column headings and social hover only. */
     --mt-brand-green: #9BBF4E;
+    /* Offset for anything else that sticks below the header. The header measures
+       ~127px with the category row and ~85px without it; CSS cannot read that, so
+       this clears the taller case with a little breathing room. Sticking something
+       at less than this tucks it behind the header - which is exactly what the cart
+       and checkout summary cards were doing at the old hardcoded 76px, hiding
+       ~51px of the card including its heading. */
+    --mt-sticky-top: 143px;
+
     /* Gap between the sticky header and the first thing on an inner page. Every
        page's inner wrapper below reads this, so it is the one place to retune that
        spacing.
@@ -714,6 +722,30 @@ body {
     outline-offset: 3px;
 }
 
+/* Dark wash over the lower part of the photo so the category name stays readable on
+   a bright or busy image. Bottom-weighted and fully transparent by 72% up, so the
+   picture itself is untouched where the text is not.
+
+   A pseudo-element rather than a background on the name: it has to sit above the
+   photo but below the text, and the photo is the absolutely positioned element that
+   scales on hover. This layer stays put while the image moves under it.
+
+   z-index 0 puts it above the photo (which is position:absolute, z-index:auto, and
+   earlier in the box tree) and below .mt-dept-name at z-index 1. It is clipped by
+   the tile's own overflow:hidden, so it follows the 40px corners. */
+.mt-dept-tile:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(to top,
+        rgba(0, 20, 45, .78) 0%,
+        rgba(0, 20, 45, .46) 26%,
+        rgba(0, 20, 45, .12) 52%,
+        rgba(0, 20, 45, 0) 72%);
+}
+
 .mt-dept-name {
     position: absolute;
     left: 0;
@@ -726,9 +758,9 @@ body {
     font-weight: 600;
     letter-spacing: -0.01em;
     color: #fff;
-    /* No background scrim behind the text - keeps the photo clean and flat. A soft text-shadow
-       (not a box-shadow on the tile) is enough to keep the name legible over a bright photo
-       without darkening the image itself. */
+    /* The gradient on .mt-dept-tile:after does the heavy lifting now; this shadow is
+       kept as a second line of defence for a photo that is bright right at the
+       baseline of the text, where the wash alone can fall short. */
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
 }
 
@@ -1143,13 +1175,31 @@ body {
 /* ===== ModernTheme: shared header/nav (v1) ===== */
 /* Replaces the legacy .navbar-default top nav on every page. Not scoped to .mt-home. */
 
+/* The sticky lives on the wrapper, not here - see below. */
 .mt-header {
     font-family: 'Inter', 'Droid Sans', sans-serif;
     background: #fff;
     border-bottom: 1px solid #E8E4DA;
+}
+
+/* index.html nests the header two levels down:
+     #content > section.hidden-print > navigation > header.mt-header
+   position: sticky is confined to its parent's content box, and both of those
+   wrappers are exactly header-height, so the rule that used to sit on .mt-header
+   had zero room to travel and never stuck at all - the header scrolled away like
+   any static element. Sticking the outer wrapper instead gives it the whole of
+   #content to travel over.
+
+   `navigation` is a custom element, so it defaults to display:inline with a zero
+   height box; making it a block keeps the wrapper's geometry honest. */
+#content > .hidden-print:first-child {
     position: sticky;
     top: 0;
     z-index: 1000;
+}
+
+navigation {
+    display: block;
 }
 
 .mt-header-row {
@@ -1540,7 +1590,8 @@ body {
     padding: 16px 24px 0;
 }
 
-/* Old fixed-navbar compensation no longer applies now that .mt-header is sticky (in-flow), not fixed */
+/* Old fixed-navbar compensation no longer applies: the header is sticky (in-flow,
+   via its wrapper - see .mt-header), not fixed. */
 .container-view {
     margin-top: 0;
 }
@@ -2359,7 +2410,7 @@ body {
 .mt-cart-side {
     flex: 0 0 320px;
     position: sticky;
-    top: 76px;
+    top: var(--mt-sticky-top);
 }
 
 .mt-cart-summary-card {
@@ -2465,7 +2516,7 @@ body {
 .mt-checkout-side {
     flex: 0 0 340px;
     position: sticky;
-    top: 76px;
+    top: var(--mt-sticky-top);
 }
 
 .mt-checkout-summary-line {
@@ -3256,13 +3307,220 @@ body {
     padding-top: var(--mt-page-top);
 }
 
-.mt-account-mobile-nav {
-    margin-bottom: 16px;
+/* ===== Mobile header: hamburger + sidebar =====
+   Below 768px the header hides search, Orders and the account dropdown, so the
+   burger is the only route to them. Both live in the header, not in a page, so
+   they are available everywhere rather than only on the account pages. */
+
+.mt-burger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    /* .mt-header-row is a flex container, so without this the button gets squashed
+       below its own width on a narrow screen. */
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    margin-right: 2px;
+    border: 1px solid #E8E4DA;
+    background: #fff;
+    border-radius: 8px;
+    color: var(--mt-accent);
+    font-size: 17px;
+    cursor: pointer;
 }
 
-.mt-account-mobile-nav .account-navigation,
-.mt-addresses .account-navigation {
+/* Backdrop and panel are display:none / visibility:hidden when closed, not merely
+   off-screen: a parked panel would still sit in the hit area and the tab order. */
+.mt-drawer-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 20, 45, .5);
+    z-index: 1040;
+}
+
+.mt-drawer-backdrop.open {
+    display: block;
+}
+
+.mt-drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 84%;
+    max-width: 330px;
+    background: #fff;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 6px 0 28px rgba(0, 14, 32, .26);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform .26s cubic-bezier(.4, 0, .2, 1), visibility 0s linear .26s;
+    overflow-y: auto;
+}
+
+.mt-drawer.open {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform .26s cubic-bezier(.4, 0, .2, 1), visibility 0s linear 0s;
+}
+
+.mt-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    border-bottom: 1px solid #E8E4DA;
+}
+
+.mt-drawer-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #726D5F;
+}
+
+.mt-drawer-close {
+    border: 0;
+    background: transparent;
+    color: #726D5F;
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px 6px;
+    cursor: pointer;
+}
+
+.mt-drawer-search {
+    padding: 14px 16px;
     margin: 0;
+    border-bottom: 1px solid #E8E4DA;
+}
+
+.mt-drawer-search input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #E8E4DA;
+    border-radius: 8px;
+    background: #FAF8F4;
+    font-size: 14px;
+}
+
+.mt-drawer-group {
+    padding: 10px 8px;
+    border-bottom: 1px solid #F0EDE6;
+}
+
+.mt-drawer-group-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: #9A9384;
+    margin: 6px 10px 8px;
+}
+
+.mt-drawer-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #262420;
+    text-align: left;
+    text-decoration: none;
+}
+
+.mt-drawer-item > .fa {
+    width: 18px;
+    margin-right: 12px;
+    text-align: center;
+    font-size: 14px;
+    color: #9A9384;
+}
+
+.mt-drawer-item:hover,
+.mt-drawer-item:focus {
+    background: #F5F2EC;
+    color: #262420;
+    text-decoration: none;
+}
+
+.mt-drawer-item.active {
+    background: #F0F5FA;
+    color: var(--mt-accent);
+    font-weight: 700;
+}
+
+.mt-drawer-item.active > .fa {
+    color: var(--mt-accent);
+}
+
+.mt-drawer-foot {
+    margin-top: auto;
+    padding: 8px;
+    border-top: 1px solid #E8E4DA;
+}
+
+.mt-drawer-logout {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    border-radius: 8px;
+    padding: 13px 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #C9302C;
+    text-align: left;
+    cursor: pointer;
+}
+
+.mt-drawer-logout > .fa {
+    width: 18px;
+    margin-right: 12px;
+    text-align: center;
+}
+
+.mt-drawer-logout:hover,
+.mt-drawer-logout:focus {
+    background: #FBEDEC;
+}
+
+/* The burger and its panel exist only where the inline header controls do not. */
+@media (max-width: 767px) {
+    .mt-burger {
+        display: inline-flex;
+    }
+
+    /* The person icon's menu opens on hover, which a touch screen has no equivalent
+       for, and every one of its links is in the panel. */
+    .mt-account {
+        display: none;
+    }
+}
+
+/* The .open states have to be listed here too. `.mt-drawer-backdrop.open` is a
+   two-class selector, so it outranks a bare `.mt-drawer-backdrop` in this block -
+   without these, a panel opened on a phone and then widened to desktop (rotate, or
+   a resized window) left the backdrop covering the whole page while the panel
+   itself was correctly hidden. */
+@media (min-width: 768px) {
+    .mt-drawer,
+    .mt-drawer.open,
+    .mt-drawer-backdrop,
+    .mt-drawer-backdrop.open {
+        display: none;
+    }
 }
 
 .mt-account-page .mt-checkout-card-title,
@@ -3657,16 +3915,200 @@ body {
     font-family: 'Inter', 'Droid Sans', sans-serif;
     color: #262420;
     background: #FAF8F4;
+    /* The -5px cancels .container-view's 5px side padding (bootstrap-451.css) so the
+       photo band can run edge to edge, as every other page wrapper here does. */
     margin: -20px -5px 0;
-    padding-bottom: 60px;
 }
 
-.mt-contact-inner {
-    padding-top: 40px;
+/* Photo as the section background with the detail cards centred over it. Same
+   three-layer construction as the home hero: absolutely filled image, a wash on
+   top of it, then relatively positioned content above both. */
+.mt-contact-hero {
+    position: relative;
+    overflow: hidden;
+    background: #002C5F;
+    display: flex;
+    /* Centred, so the open photo above the heading and below the cards comes out
+       even. Top-aligning instead put the heading 56px from the header but dumped
+       ~430px of empty photo under the cards. */
+    align-items: center;
+    /* Tall enough that the footer stays below the fold on desktop. The subtrahend
+       is kept small on purpose. The header above this varies - roughly 127px with
+       the category row, ~84px without it when the category tree is empty - so
+       subtracting anything close to its height leaves the footer landing on the
+       fold in the shorter case. At 40px the band clears the viewport under either.
+       The 640px floor keeps it from collapsing on a short laptop, where the vh
+       term comes out smaller. */
+    min-height: max(640px, calc(100vh - 40px));
 }
 
-.mt-contact-inner > .mt-pdp-title {
-    margin-bottom: 20px;
+.mt-contact-photo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+/* Even wash rather than the hero's directional one - the cards sit in the middle
+   here, so there is no open side to keep clear. Deliberately lighter than the home
+   hero's: only the heading needs contrast, since the cards below are opaque, so the
+   photo is left readable. Weighted towards the top where the white text sits. */
+.mt-contact-scrim {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg,
+        rgba(0, 30, 61, .78) 0%,
+        rgba(0, 44, 95, .55) 34%,
+        rgba(0, 44, 95, .42) 62%,
+        rgba(0, 30, 61, .58) 100%);
+}
+
+.mt-contact-hero-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    /* Inner breathing room around the centred block, on top of the even space the
+       band's own height leaves above and below it. */
+    padding: 40px 0 40px;
+}
+
+.mt-contact-head {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 32px;
+}
+
+.mt-contact-title {
+    font-size: 52px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #FFFFFF;
+    margin: 0 0 12px;
+}
+
+.mt-contact-lede {
+    font-size: 18px;
+    color: rgba(255, 255, 255, .85);
+    margin: 0;
+}
+
+/* Centred pair, each card holding its own width so two of them stay balanced and a
+   single one does not stretch across the whole band. */
+.mt-contact-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+}
+
+/* Glass rather than solid: a translucent navy panel over the photo, so the image
+   reads through the card. Tinted navy rather than white because the photo has
+   bright areas (sky) that white type could not hold contrast against on its own -
+   the panel guarantees it wherever the card lands. backdrop-filter is a bonus, not
+   load-bearing: without it the rgba background alone still carries the contrast. */
+.mt-contact-card {
+    flex: 0 1 340px;
+    background: rgba(0, 24, 50, .42);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, .24);
+    border-radius: 14px;
+    padding: 28px 28px 30px;
+    box-shadow: 0 18px 40px rgba(0, 14, 32, .28);
+}
+
+.mt-contact-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, .84);
+    margin: 0 0 10px;
+}
+
+.mt-contact-card p:last-child {
+    margin-bottom: 0;
+}
+
+.mt-contact-card-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0 0 10px;
+}
+
+.mt-contact-strong {
+    font-weight: 700;
+}
+
+.mt-contact-card .mt-contact-strong {
+    color: #FFFFFF;
+}
+
+.mt-contact-card a {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.mt-contact-card a:hover,
+.mt-contact-card a:focus {
+    color: var(--mt-brand-green);
+}
+
+.mt-contact-ic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .22);
+    color: #FFFFFF;
+    font-size: 17px;
+}
+
+/* Roomier cards, which also buys the centred block height. */
+@media (min-width: 768px) {
+    .mt-contact-card {
+        padding: 32px 30px 34px;
+    }
+}
+
+@media (max-width: 767px) {
+    /* No forced height on a phone - the cards stack, so the content is tall enough
+       on its own and a viewport-height floor would only add dead space. */
+    .mt-contact-hero {
+        min-height: 0;
+    }
+
+    /* .mt-contact carries margin-top: -20px, so the first 20px of this padding is
+       spent tucking under the sticky header and never shows. 64px here is ~44px of
+       actual space above the heading. The band has min-height: 0 at this width, so
+       its centring is inert and this padding is the whole story. */
+    .mt-contact-hero-content {
+        padding: 64px 0 48px;
+    }
+
+    .mt-contact-title {
+        font-size: 34px;
+        letter-spacing: -.5px;
+    }
+
+    .mt-contact-lede {
+        font-size: 16px;
+    }
+
+    .mt-contact-card {
+        flex: 1 1 100%;
+        padding: 22px;
+    }
 }
 
 /* ===== ModernTheme: Legal pages (Security / Conditions) (v1) ===== */

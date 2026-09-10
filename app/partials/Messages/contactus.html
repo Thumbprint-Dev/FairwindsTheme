@@ -1,18 +1,57 @@
 <section class="mt-contact">
-    <accountnavigation ng-show="user.Permissions.contains('ViewSelfAdmin') || user.Type == 'Customer'"></accountnavigation>
-    <div class="mt-container mt-contact-inner">
-        <h1 class="mt-pdp-title">{{('Contact' | r) + ' ' + ('Us' | r) | xlat }}</h1>
+    <!-- Photo as the section background with the detail cards centred over it,
+         built on the same three-layer pattern as the home hero (photo, wash, then
+         relatively positioned content above both).
 
-        <div class="mt-checkout-card">
-            <h2 class="mt-checkout-card-title">Any Questions?</h2>
-            <p>Questions about your order? Need help with an order? Need general site support?</p>
-            <p><strong>Email us at <a href="mailto:support@thumbprint.com">support@thumbprint.com</a></strong></p>
-        </div>
+         TODO(Fairwinds): STAND-IN PHOTO. This is the home hero's image, reused so the
+         layout renders. The intended shot is images/about/stock.jpg from the marketing
+         site, which needs re-hosting under https://thumbprint.com/four51_images/ before
+         it can be used here - the markup it came from points at a Next.js
+         image-optimiser path that only resolves on that site. Swap the src and nothing
+         else changes. -->
+    <div class="mt-contact-hero">
+        <img class="mt-contact-photo"
+             src="https://images.ctfassets.net/dmzde5ytz0gs/1xXJIFc1d4X6NXkEyObsm7/03bd33fc490a08b4cd3b2abc2f7fadf0/GettyImages-637225048.jpg?q=90&amp;w=1920"
+             alt="" />
+        <div class="mt-contact-scrim"></div>
 
-        <div class="mt-checkout-card">
-            <h2 class="mt-checkout-card-title">Our Office Hours</h2>
-            <p><strong>Monday &ndash; Friday, 8am to 5pm</strong></p>
-            <p>Feel free to contact us outside of these hours and one of our team members will respond as soon as possible!</p>
+        <div class="mt-contact-hero-content">
+            <div class="mt-container">
+                <div class="mt-contact-head">
+                    <h1 class="mt-contact-title">{{('Contact' | r) + ' ' + ('Us' | r) | xlat }}</h1>
+                    <p class="mt-contact-lede">{{'We are here to help with orders, artwork and anything else you need.' | r | xlat}}</p>
+                </div>
+
+                <div class="mt-contact-cards">
+                    <div class="mt-contact-card">
+                        <span class="mt-contact-ic"><i class="fa fa-envelope" aria-hidden="true"></i></span>
+                        <h2 class="mt-contact-card-title">{{'Any Questions?' | r | xlat}}</h2>
+                        <p>{{'Questions about your order? Need help with an order? Need general site support?' | r | xlat}}</p>
+                        <p class="mt-contact-strong">
+                            {{'Email us at' | r | xlat}}
+                            <a href="mailto:support@thumbprint.com">support@thumbprint.com</a>
+                        </p>
+                    </div>
+
+                    <div class="mt-contact-card">
+                        <span class="mt-contact-ic"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
+                        <h2 class="mt-contact-card-title">{{'Our Office Hours' | r | xlat}}</h2>
+                        <p class="mt-contact-strong">{{'Monday – Friday, 8am to 5pm' | r | xlat}}</p>
+                        <p>{{'Feel free to contact us outside of these hours and one of our team members will respond as soon as possible!' | r | xlat}}</p>
+                    </div>
+
+                    <!-- Third card points at the return policy the footer already links
+                         to twice, rather than inventing a new contact channel. -->
+                    <div class="mt-contact-card">
+                        <span class="mt-contact-ic"><i class="fa fa-refresh" aria-hidden="true"></i></span>
+                        <h2 class="mt-contact-card-title">{{'Returns &amp; Warranty' | r | xlat}}</h2>
+                        <p>{{'Something not right with an order? Our return policy and limited warranty covers what can be returned and how.' | r | xlat}}</p>
+                        <p class="mt-contact-strong">
+                            <a href="https://thumbprint.com/return-policy-and-limited-warranty/" target="_blank" rel="noopener">{{'Read the return policy' | r | xlat}}</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

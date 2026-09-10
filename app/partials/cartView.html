@@ -1,4 +1,20 @@
 <section class="mt-cart">
+
+    <!-- Empty state. Everything below is inside ng-show="currentOrder", so with no
+         open order this page rendered as a blank cream area with no heading and no
+         way out. Same card + message + action shape the Favorites and Orders empty
+         states use. -->
+    <div class="mt-container mt-cart-inner hidden-print" ng-hide="currentOrder">
+        <div class="mt-cart-header">
+            <h1 class="mt-pdp-title">{{'Your cart' | r | xlat}}</h1>
+        </div>
+        <div class="mt-checkout-card">
+            <h2 class="mt-checkout-card-title">{{'Your cart is empty' | r | xlat}}</h2>
+            <p class="mt-orders-empty-message">{{'Nothing here yet - browse the catalog and add something to get started.' | r | xlat}}</p>
+            <button type="button" class="mt-btn-accent" redirect="/catalog">{{'Browse the catalog' | r | xlat}}</button>
+        </div>
+    </div>
+
     <div ng-show="currentOrder" class="hidden-print">
         <form ng-submit="saveChanges()" name="cart" novalidate="" class="mt-container mt-cart-inner">
             <div class="mt-cart-header">

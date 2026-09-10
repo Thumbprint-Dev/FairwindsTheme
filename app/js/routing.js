@@ -51,3 +51,21 @@ four51.app.config(['$routeProvider', '$locationProvider', function($routeProvide
         when('/contactus', { templateUrl: 'partials/Messages/contactus.html' }).
         otherwise({redirectTo: '/catalog'});
 }]);
+
+// Start every route at the top of the page.
+//
+// ngView already has an `autoscroll` attribute in index.html, but in Angular 1.2
+// that calls $anchorScroll from inside the ngAnimate "enter" callback - it fires
+// after the browser has clamped the previous scroll offset to the new view's
+// height. Following a link from the bottom of a long page (the footer's own links,
+// or the contact link in the home CTA) therefore lands part-way down, or at the
+// bottom, of the next page. Resetting on $routeChangeSuccess is independent of the
+// animation, so it holds regardless of view height.
+four51.app.run(['$rootScope', '$anchorScroll', '$location', function($rootScope, $anchorScroll, $location) {
+    $rootScope.$on('$routeChangeSuccess', function() {
+        // A link that targets an in-page anchor still wins; only reset when there
+        // is no fragment to honour.
+        if ($location.hash()) $anchorScroll();
+        else window.scrollTo(0, 0);
+    });
+}]);

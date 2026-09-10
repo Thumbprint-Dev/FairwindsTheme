@@ -1,5 +1,14 @@
-<header class="mt-header" role="banner">
+<header class="mt-header" role="banner" ng-init="mobileNav = {open: false}">
     <div class="mt-header-row mt-container">
+
+        <!-- Mobile only. The desktop header carries search, Orders and the account
+             dropdown inline; below 768px those are hidden, so this is the way to
+             reach them. -->
+        <button type="button" class="mt-burger" ng-click="mobileNav.open = true"
+                aria-label="{{'Menu' | r | xlat}}" aria-expanded="{{!!mobileNav.open}}">
+            <i class="fa fa-bars" aria-hidden="true"></i>
+        </button>
+
         <a id="451qa_home_link" href="catalog" class="mt-brand" ng-show="Four51User.isAuthenticated()" aria-label="{{'Go to store home' | r | xlat}}">
             <!-- The live store's header mark. It reads user.Company.LogoUrl too, but
                  commented it out in favour of this file (headerNavigation.js) - that
@@ -81,4 +90,74 @@
          header, below the category row, rather than directly under the logo row as
          it does there - the category nav is this theme's and has no equivalent. -->
     <div class="mt-header-decoration" aria-hidden="true"></div>
+
+    <!-- ===== Mobile sidebar =====
+         Everything the desktop header shows inline. This directive lives outside
+         ng-view, so its scope survives route changes - hence the explicit close on
+         every item that navigates, or the panel would still be open on the next page.
+
+         The flag is a property on an object rather than a bare scope value on
+         purpose. ng-if and ng-repeat each create a child scope, and assigning to a
+         primitive from inside one of those only shadows it on the child - the
+         parent, and so the panel, never sees the change. Writing through
+         mobileNav.open resolves the object up the prototype chain and sets the
+         property on the one instance every scope shares. -->
+    <div class="mt-drawer-backdrop" ng-class="{'open': mobileNav.open}" ng-click="mobileNav.open = false"></div>
+
+    <div class="mt-drawer" ng-class="{'open': mobileNav.open}" role="dialog" aria-label="{{'Menu' | r | xlat}}">
+        <div class="mt-drawer-head">
+            <span class="mt-drawer-title">{{'Menu' | r | xlat}}</span>
+            <button type="button" class="mt-drawer-close" ng-click="mobileNav.open = false" aria-label="{{'Close' | r | xlat}}">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <form class="mt-drawer-search" ng-submit="doSearch(); mobileNav.open = false" role="search">
+            <label for="mt-drawer-search-input" class="sr-only">{{'Search' | r | xlat}}</label>
+            <input id="mt-drawer-search-input" type="search" ng-model="searchTerm" placeholder="{{'Search products, SKUs, categories' | r | xlat}}&hellip;" />
+        </form>
+
+        <!-- Same `tree` the category row uses, so this list follows the catalog. -->
+        <div class="mt-drawer-group" ng-if="tree.length">
+            <p class="mt-drawer-group-title">{{'Shop' | r | xlat}}</p>
+            <a class="mt-drawer-item" href="catalog" ng-click="mobileNav.open = false">
+                <i class="fa fa-th-large" aria-hidden="true"></i>{{'All products' | r | xlat}}
+            </a>
+            <a class="mt-drawer-item" ng-repeat="cat in tree" ng-href="catalog/{{cat.InteropID}}"
+               ng-class="{'active': isInPath(cat.InteropID)}" ng-click="mobileNav.open = false">
+                <i class="fa fa-angle-right" aria-hidden="true"></i><span ng-bind-html="cat.Name"></span>
+            </a>
+        </div>
+
+        <div class="mt-drawer-group">
+            <p class="mt-drawer-group-title">{{'Account' | r | xlat}}</p>
+            <a class="mt-drawer-item" href="order" ng-if="user.Type == 'Customer'" ng-click="mobileNav.open = false">
+                <i class="fa fa-truck" aria-hidden="true"></i>{{'Orders' | r | xlat}}
+            </a>
+            <a class="mt-drawer-item" href="admin" ng-show="user.Permissions.contains('ViewSelfAdmin')" ng-click="mobileNav.open = false">
+                <i class="fa fa-user" aria-hidden="true"></i>{{'User Information' | r | xlat}}
+            </a>
+            <a class="mt-drawer-item" href="addresses" ng-show="user.Type == 'Customer' && (user.Permissions.contains('CreateShipToAddress') || user.Permissions.contains('CreateBillToAddress'))" ng-click="mobileNav.open = false">
+                <i class="fa fa-map-marker" aria-hidden="true"></i>{{'Addresses' | r | xlat}}
+            </a>
+            <a class="mt-drawer-item" href="message" ng-show="user.Type == 'Customer' && user.Permissions.contains('ViewMessaging')" ng-click="mobileNav.open = false">
+                <i class="fa fa-envelope" aria-hidden="true"></i>{{'Messages' | r | xlat}}
+            </a>
+            <a class="mt-drawer-item" href="favoriteorders" ng-show="user.Type == 'Customer'" ng-click="mobileNav.open = false">
+                <i class="fa fa-heart" aria-hidden="true"></i>{{'Favorite Orders' | r | xlat}}
+            </a>
+            <a class="mt-drawer-item" href="reports" ng-show="user.Type == 'Customer' && user.Permissions.contains('AdvancedReporting')" ng-click="mobileNav.open = false">
+                <i class="fa fa-bar-chart-o" aria-hidden="true"></i>{{'Reports' | r | xlat}}
+            </a>
+            <a class="mt-drawer-item" href="contactus" ng-show="user.Permissions.contains('ViewContactUs')" ng-click="mobileNav.open = false">
+                <i class="fa fa-comments" aria-hidden="true"></i>{{'Contact Us' | r | xlat}}
+            </a>
+        </div>
+
+        <div class="mt-drawer-foot" ng-show="user.Type!='TempCustomer'">
+            <button type="button" class="mt-drawer-logout 451_btn_logout" ng-click="mobileNav.open = false; Logout()">
+                <i class="fa fa-power-off" aria-hidden="true"></i>{{'Log Out' | r | xlat}}
+            </button>
+        </div>
+    </div>
 </header>
