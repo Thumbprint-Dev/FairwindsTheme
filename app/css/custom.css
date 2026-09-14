@@ -76,6 +76,12 @@ body {
     background: #FAF8F4;
 }
 
+@media (min-width: 768px) {
+    #content > .container-view {
+        min-height: 100vh;
+    }
+}
+
 /* ===== ModernTheme: Footer =====
    Ported from the live FairwindsV2 store (its .fwf- block): navy gradient panel,
    four link columns, then a rule and the copyright/legal row. The green (#9BBF4E)
@@ -862,9 +868,9 @@ body {
 
 /* ===== Featured band =====
    The live store's featured section: a pale wash behind the row, and its product
-   card in place of this theme's. Everything here is scoped to .mt-featured-wash /
-   .mt-carousel-card on purpose - mtProductCard.html is shared with the PLP and the
-   search results, which keep the existing card. */
+   card in place of this theme's. The card treatment is shared by the featured row
+   and the PLP; search results keep the older flat card, so every rule below is
+   scoped to .mt-carousel-card / .mt-plp rather than bare .mt-product-card. */
 
 .mt-featured-wash {
     background: #F6F8FA;
@@ -881,7 +887,8 @@ body {
     margin-bottom: 28px;
 }
 
-.mt-carousel-card .mt-product-card {
+.mt-carousel-card .mt-product-card,
+.mt-plp .mt-product-card {
     border: 1px solid #E3E8EE;
     border-radius: 14px;
     padding: 0;
@@ -891,25 +898,30 @@ body {
 }
 
 .mt-carousel-card .mt-product-card:hover,
-.mt-carousel-card .mt-product-card:focus-within {
+.mt-carousel-card .mt-product-card:focus-within,
+.mt-plp .mt-product-card:hover,
+.mt-plp .mt-product-card:focus-within {
     transform: translateY(-4px);
     border-color: #CBD6E2;
     box-shadow: 0 14px 30px rgba(16, 32, 48, .13);
 }
 
 /* Media panel: full-bleed to the card edges, on the same wash as the band. */
-.mt-carousel-card .mt-placeholder-photo {
+.mt-carousel-card .mt-placeholder-photo,
+.mt-plp .mt-product-card .mt-placeholder-photo {
     background-color: #F6F8FA;
     border-radius: 0;
     padding: 22px;
     margin: 0;
 }
 
-.mt-carousel-card .mt-real-photo {
+.mt-carousel-card .mt-real-photo,
+.mt-plp .mt-product-card .mt-real-photo {
     background-image: none;
 }
 
-.mt-carousel-card .mt-product-name {
+.mt-carousel-card .mt-product-name,
+.mt-plp .mt-product-card .mt-product-name {
     padding: 18px 18px 0;
     font-size: 15px;
     font-weight: 700;
@@ -918,24 +930,35 @@ body {
     margin: 0 0 10px;
 }
 
-.mt-carousel-card .mt-product-card .mt-pdp-sku {
+.mt-carousel-card .mt-product-card .mt-pdp-sku,
+.mt-plp .mt-product-card .mt-pdp-sku {
     padding: 0 18px;
     margin: 0 0 6px;
 }
 
-.mt-carousel-card .mt-product-price {
+.mt-carousel-card .mt-product-price,
+.mt-plp .mt-product-card .mt-product-price {
     padding: 0 18px;
     font-size: 17px;
     font-weight: 800;
     color: var(--mt-accent);
 }
 
-.mt-carousel-card .mt-product-card-add {
+.mt-carousel-card .mt-product-card-add,
+.mt-plp .mt-product-card-add {
     width: auto;
     margin: 14px 18px 18px;
 }
 
-.mt-carousel-card .mt-product-card-note {
+/* That margin shorthand also overwrites the base card's margin-top: auto, which is
+   what pins the button to the bottom of the card. Put it back, or buttons across a
+   row sit at whatever height the product name happened to wrap to. */
+.mt-plp .mt-product-card > .mt-product-card-add {
+    margin-top: auto;
+}
+
+.mt-carousel-card .mt-product-card-note,
+.mt-plp .mt-product-card-note {
     padding: 0 18px 16px;
 }
 
@@ -1655,6 +1678,48 @@ navigation {
     letter-spacing: -0.01em;
     margin: 0;
     color: #211F19;
+}
+
+/* The sidebar is visible-md visible-lg and the col-md-9/col-md-12 swap only binds
+   at the same width, so below 992px this button toggles something that is not on
+   screen either way. Hide it rather than leave a control that does nothing. */
+@media (max-width: 991px) {
+    .mt-plp-nav-toggle {
+        display: none;
+    }
+}
+
+/* Bootstrap's col-sm-3 reserves a fixed quarter of the row per product, so a
+   category holding one or two items left a narrow card stranded against a lot of
+   empty space. Drive the grid off the track size instead: auto-fit gives the usual
+   four-up once there are enough products, and collapses the empty tracks when
+   there are not, so a sparse row's cards grow into the space they have. The cap
+   keeps a lone product from stretching into a billboard.
+
+   The columns keep their Bootstrap padding as the gutter, but have to give up
+   float and their percentage widths to act as grid items. The :before/:after
+   clearfix goes for the same reason it would in a flex row - it becomes a grid
+   item of its own. */
+.mt-plp .mt-product-grid-wrap .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    align-items: stretch;
+}
+
+.mt-plp .mt-product-grid-wrap .row:before,
+.mt-plp .mt-product-grid-wrap .row:after {
+    display: none;
+}
+
+.mt-plp .mt-product-grid-wrap .row > [class*="col-"] {
+    display: flex;
+    float: none;
+    width: auto;
+}
+
+.mt-plp .mt-product-grid-wrap .row > [class*="col-"] > .mt-product-card {
+    width: 100%;
+    max-width: 340px;
 }
 
 .mt-sidebar {
